@@ -1,0 +1,71 @@
+group 'com.fortis.jmeterspring'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    springVersion = "4.0.6.RELEASE"
+    log4jVersion = "2.4.1"
+    slf4jVersion = "1.7.13"
+    jMeterVersion = "4.0"
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile "org.apache.jmeter:ApacheJMeter_core:$jMeterVersion"
+    compile "org.apache.jmeter:ApacheJMeter_java:$jMeterVersion"
+
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+    compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+
+    compile 'com.alibaba:dubbo:2.5.3'
+
+    compile 'org.apache.zookeeper:zookeeper:3.4.6'
+    compile 'de.ruedigermoeller:fst:2.48-jdk-6'
+    compile 'com.101tec:zkclient:0.2'
+    compile 'org.apache.curator:curator-framework:2.12.0'
+
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.javassist:javassist:3.15.0-GA'
+
+    // Spring依赖
+    compile "org.springframework:spring-core:$springVersion",
+            "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-beans:$springVersion",
+            "org.springframework:spring-expression:$springVersion"
+}
+
+task pack(type: Zip,dependsOn:jar) {
+    from (configurations.compile){
+        //dubbo
+        include("dubbo-2.5.3.jar")
+        include("jline-0.9.94.jar")
+        include("netty-3.2.5.Final.jar")
+        include("zkclient-0.2.jar")
+        include("zookeeper-3.4.8.jar")
+        //class-json
+        include("gson-2.8.2.jar")
+        include("javassist-*.jar")
+        //spring
+        include("spring-aop-$springVersion"+".jar")
+        include("spring-context-$springVersion"+".jar")
+        include("spring-beans-$springVersion"+".jar")
+        include("spring-core-$springVersion"+".jar")
+        include("spring-expression-$springVersion"+".jar")
+        //log
+        include("*log4j*")
+        include("*slf4j*")
+    }
+    from(jar.outputs.files)
+    into (project.name)
+}
